@@ -1,0 +1,205 @@
+Merges:
+
+Cluster 195 and 246 have merged.
+
+Cluster 193 and 410 have merged.
+
+Cluster 455 and 491 have merged.
+
+Cluster 254 and 288 have merged.
+
+Cluster 131 and 291 have merged.
+
+Cluster 219 and 258 have merged.
+
+Cluster 58 and 289 have merged.
+
+Cluster 480 and 488 have merged.
+
+Cluster 150 and 253 have merged.
+
+Cluster 468 and 495 have merged.
+
+Cluster 171 and 220 have merged.
+
+Cluster 12 and 165 have merged.
+
+Cluster 71 and 230 have merged.
+
+Cluster 61 and 141 have merged.
+
+Cluster 197 and 234 have merged.
+
+Cluster 133 and 164 have merged.
+
+Cluster 42 and 119 have merged.
+
+Cluster 352 and 456 have merged.
+
+Cluster 245 and 388 have merged.
+
+Cluster 162 and 221 have merged.
+
+Cluster 161 and 243 have merged.
+
+Cluster 203 and 403 have merged.
+
+Cluster 24 and 37 have merged.
+
+Cluster 112 and 118 have merged.
+
+Cluster 27 and 293 have merged.
+
+Cluster 58 and 66 have merged.
+
+Cluster 181 and 401 have merged.
+
+Cluster 343 and 476 have merged.
+
+Cluster 97 and 125 have merged.
+
+Cluster 453 and 497 have merged.
+
+Cluster 292 and 381 have merged.
+
+Cluster 223 and 229 have merged.
+
+Cluster 1 and 8 have merged.
+
+Cluster 176 and 432 have merged.
+
+Cluster 295 and 318 have merged.
+
+Cluster 91 and 386 have merged.
+
+Cluster 19 and 232 have merged.
+
+Cluster 179 and 287 have merged.
+
+Cluster 201 and 313 have merged.
+
+Cluster 91 and 272 have merged.
+
+Cluster 275 and 320 have merged.
+
+Cluster 295 and 327 have merged.
+
+Cluster 415 and 428 have merged.
+
+Cluster 167 and 223 have merged.
+
+Cluster 151 and 189 have merged.
+
+Cluster 161 and 284 have merged.
+
+Cluster 203 and 396 have merged.
+
+Cluster 273 and 295 have merged.
+
+Cluster 36 and 311 have merged.
+
+Cluster 83 and 210 have merged.
+
+Cluster 117 and 211 have merged.
+
+Cluster 394 and 395 have merged.
+
+Cluster 126 and 254 have merged.
+
+Cluster 305 and 493 have merged.
+
+Cluster 343 and 480 have merged.
+
+Cluster 33 and 205 have merged.
+
+Cluster 174 and 382 have merged.
+
+Cluster 82 and 286 have merged.
+
+Cluster 20 and 61 have merged.
+
+Cluster 356 and 458 have merged.
+
+Cluster 207 and 333 have merged.
+
+Cluster 24 and 168 have merged.
+
+Cluster 455 and 490 have merged.
+
+Cluster 22 and 212 have merged.
+
+Cluster 192 and 332 have merged.
+
+Cluster 176 and 400 have merged.
+
+Cluster 262 and 325 have merged.
+
+Cluster 356 and 470 have merged.
+
+Cluster 47 and 239 have merged.
+
+Cluster 273 and 324 have merged.
+
+Cluster 4 and 60 have merged.
+
+Cluster 4 and 20 have merged.
+
+Cluster 103 and 257 have merged.
+
+Cluster 471 and 483 have merged.
+
+Cluster 107 and 139 have merged.
+
+Cluster 17 and 267 have merged.
+
+Cluster 26 and 71 have merged.
+
+Cluster 124 and 146 have merged.
+
+Cluster 356 and 473 have merged.
+
+Cluster 418 and 464 have merged.
+
+Cluster 343 and 454 have merged.
+
+Cluster 294 and 315 have merged.
+
+Cluster 261 and 319 have merged.
+
+Cluster 481 and 496 have merged.
+
+Cluster 292 and 383 have merged.
+
+Cluster 4 and 68 have merged.
+
+Cluster 305 and 481 have merged.
+
+Cluster 222 and 379 have merged.
+
+Cluster 117 and 177 have merged.
+
+Cluster 7 and 15 have merged.
+
+Cluster 39 and 160 have merged.
+
+Cluster 12 and 302 have merged.
+
+Cluster 27 and 133 have merged.
+
+Cluster 108 and 136 have merged.
+
+Cluster 56 and 215 have merged.
+
+Cluster 236 and 255 have merged.
+
+Cluster 27 and 408 have merged.
+
+Cluster 22 and 249 have merged.
+
+Cluster 152 and 219 have merged.
+
+Cluster 82 and 129 have merged.
+
+('Most similar: ', 102, ' and ', 130)
+('Least Similar: ', 1, ' and ', 13)
+Closest to centroid: 371

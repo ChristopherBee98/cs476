@@ -1,0 +1,87 @@
+diet:
+Top ten related documents:
+353.html 1.0
+263.html 1.0
+009.html 1.0
+050.html 1.0
+018.html 1.0
+152.html 1.0
+252.html 1.0
+My program took 50.9842598438 to run.
+
+international affairs:
+Top ten related documents:
+002.html 1.0
+419.html 1.0
+426.html 1.0
+229.html 1.0
+351.html 1.0
+226.html 1.0
+019.html 0.981877826523
+240.html 0.970369795805
+286.html 0.944735268589
+340.html 0.944735268589
+My program took 51.69840312 to run.
+
+Zimbabwe:
+Term Zimbabwe was not used in search (either not in corpus or was filtered out by preprocessor).
+
+No results. Try different terms.
+My program took 52.6014909744 to run.
+
+computer network:
+Top ten related documents:
+047.html 1.0
+290.html 1.0
+388.html 1.0
+145.html 1.0
+022.html 0.980733707989
+164.html 0.94931100635
+064.html 0.948080734332
+027.html 0.948080734332
+223.html 0.929487415829
+156.html 0.738025251778
+My program took 51.0489289761 to run.
+
+hydrotherapy:
+Top ten related documents:
+273.html 1.0
+My program took 51.1920118332 to run.
+
+identity theft:
+Top ten related documents:
+292.html 0.842414346743
+379.html 0.842414346743
+380.html 0.842414346743
+243.html 0.538830277918
+391.html 0.538830277918
+397.html 0.538830277918
+272.html 0.538830277918
+019.html 0.538830277918
+027.html 0.538830277918
+298.html 0.538830277918
+My program took 51.3339300156 to run.
+
+dog cat mouse:
+Top ten related documents:
+022.html 0.628713670197
+037.html 0.628713670197
+001.html 0.549872312864
+390.html 0.549872312864
+303.html 0.549872312864
+304.html 0.549872312864
+019.html 0.549872312864
+309.html 0.549872312864
+118.html 0.549872312864
+364.html 0.549872312864
+My program took 51.1386020184 to run.
+
+asdfuiop cat:
+Term asdfuiop was not used in search (either not in corpus or was filtered out by preprocessor).
+
+Top ten related documents:
+304.html 1.0
+001.html 1.0
+309.html 1.0
+303.html 1.0
+My program took 51.0911660194 to run.

@@ -1,0 +1,372 @@
+#CMSC 476 Information Retrieval Homework 5
+#Austin Bailey
+#baustin1@umbc.edu
+
+#Your program is to execute agglomerative clustering, using the group average link method. As each step of the algorithm proceeds, indicate which objects are being    #merged (clustered) together, where again an object can be a single document, or an existing cluster. The clustering will cease when no two clusters (or documents)    #have similarity greater than 0.4. Clustering is discussed in the textbook, and more information is available online.
+#Idea: Use the loop that was created for comparing query and documents, and use that as a foundation to compare documents to each other. Start with document 1, and
+#compare to every other document. Then increment to document 2, and compare from that way forth (no need to compare it to 1 since sim(i,j) = sim(j,i)). Keep doing
+#this and calculate all the similarities between each of all the documents.
+#Plan: Having created similarities for all documents, create similarity matrix (2d array) with diagonals all 1 and the others lower triangle being equal.
+#Then, send it to the agglomerative algorithm to process.
+#Group link is average link
+
+
+#Due on May 7th, 2018
+
+import math
+import time
+import os
+import json
+import operator
+import errno
+import sys
+from os import listdir
+from os.path import isfile, join
+import re
+import nltk
+import codecs
+from HTMLParser import HTMLParser
+import tokenize
+from bs4 import BeautifulSoup
+from collections import defaultdict
+
+class MyHTMLParser(HTMLParser):
+    def handle_starttag(self, tag, attrs):
+        print "Encountered a start tag:", tag
+
+    def handle_endtag(self, tag):
+        print "Encountered an end tag :", tag
+
+    def handle_data(self, data):
+        print "Encountered some data  :", data
+
+#reuse for formatting all the tokenized files
+def formatInfo(directory):
+    #formats info
+    with open(directory, 'r+') as formatDic:
+        temp = formatDic.read()
+        temp = temp.replace("{"," ")
+        temp = temp.replace("}","")
+        temp = temp.replace("\"","")
+        temp = temp.replace(",","\n")
+        temp = temp.replace(":",",")
+        formatDic.close
+    formatDic = open(directory, 'w')
+    formatDic.write(temp)
+    formatDic.close()
+
+def calcQueryWeight(freqInDoc, amountOfTokens, totalDocFreq, key, htmlList):
+    #create query weights
+    tfWeight = float(freqInDoc) / amountOfTokens
+    idfWeight = len(htmlList) / float(totalDocFreq)
+    idfWeight = math.log(idfWeight)
+    termWeight = tfWeight * idfWeight
+    return termWeight
+
+def main():
+    start_time = time.time()
+    inputDir = 'files'
+    outputDir = 'clusterFiles'
+    #if inputdir and outputdir are given as arguments
+    htmlList = []
+    topOfAverage = 0.0
+    bottomOfAverage = 126253
+    index = 0
+    countOfHtml = 0
+    firstPos = 1 #position start in posting file
+    dictOfLists = defaultdict(list)
+    postList = [] #postings file
+    dictList = [] #dictionary file
+    shortList = [] #used for quick access when retrieving
+    listOfTerms = dict()
+    #directory to path that parse.py is in
+    tokenFilePath = os.path.abspath(os.path.join("sortedByTokens.csv"))
+    frequencyFilePath = os.path.abspath(os.path.join("sortedByFrequency.csv"))
+    #make a list of stopwords
+    stopWordDoc = codecs.open(os.path.abspath(os.path.join("stoplist.txt")))
+    tempWord = stopWordDoc.read()
+    wordSoup = BeautifulSoup(tempWord, 'html.parser')
+    stopWordList = wordSoup.get_text()
+    stopWordList = stopWordList.split("\n")
+    #contains every document that has at least one of the terms from the query
+    dictWithOneTerm = dict()
+    dictWithSingleTerm = []
+    retrievalDict = dict()
+    #2d array for similarity matrix; used to send to algorithm in agglomerative
+    simMatrix = []
+    #contains each term from query, and value is the term weight (treat query as a document)
+    queryDict = dict()
+    wordDict = dict()
+    #make a dict of the stop words
+    for word in stopWordList:
+        wordDict[word] = 1
+    stopWordDoc.close()
+    #dict for number of documents word is in
+    totalDocDict = dict()
+    #dict for all words
+    bigDict = dict()
+    #makes a list of whatever html files are in my directory 'files'
+    htmlList = [f for f in listdir(os.path.abspath(inputDir)) if isfile(join(os.path.abspath(inputDir), f))]
+    #list of dictionaries for the html files
+    htmlDicts = [dict() for x in range(len(htmlList))]
+    tempMatrix = 0
+    while (tempMatrix < len(htmlList)):
+        simMatrix.append([])
+        tempMatrix += 1
+    for i in htmlList:
+        countOfHtml += 1
+        #path to directory program is running in
+        doc = codecs.open(os.path.abspath(inputDir + '/' + i), 'r')
+        tempString = doc.read()
+        soup = BeautifulSoup(tempString, 'html.parser')
+        #gets text from html document
+        tempText = soup.get_text()
+        #lowers the case
+        tempText = tempText.lower()
+        #creates a list
+        tempText = tempText.split()
+        #gets rid of unwanted characters
+        for index in range(0, (len(tempText) - 1)):
+            tempText[index] = ''.join(e for e in tempText[index] if e.isalnum())
+            index += 1
+        #create entries and add to frequency if it already exists
+        tempDict = dict()
+        for j in tempText:
+            #makes sure there are no stop words and the length of the word is greater than 1
+            if (not(j in wordDict) and (len(j) > 1)):
+                if (not(j in tempDict)):
+                    tempDict[j] = 1
+                else:
+                    tempDict[j] += 1
+                if (not(j in bigDict)):
+                    bigDict[j] = 1
+                else:
+                    bigDict[j] += 1
+                if (not(j in totalDocDict)):
+                    totalDocDict[j] = 1
+                else:
+                    if (tempDict[j] == 1):
+                        totalDocDict[j] += 1
+        #sort tokens by token (alphabetically) and by frequency; output these to 2 files for each html file
+        tempDict.pop("", None)
+        totalDocDict.pop("", None)
+    bigDict.pop("", None)
+    countOfHtml = 0
+    for i in htmlList:
+        countOfHtml += 1
+        #path to directory program is running in
+        doc = codecs.open(os.path.abspath(inputDir + '/' + i), 'r')
+        tempString = doc.read()
+        soup = BeautifulSoup(tempString, 'html.parser')
+        #gets text from html document
+        tempText = soup.get_text()
+        #lowers the case
+        tempText = tempText.lower()
+        #creates a list
+        tempText = tempText.split()
+        #gets rid of unwanted characters
+        for index in range(0, (len(tempText) - 1)):
+            tempText[index] = ''.join(e for e in tempText[index] if e.isalnum())
+            index += 1
+        tempDict = dict() #for each html file
+        weightDict = dict() #for tf weights
+        #create entries and add to frequency if it already exists
+        for j in tempText:
+            #makes sure there are no stop words and the length of the word is greater than 1
+            if (not(j in wordDict) and (len(j) > 1) and bigDict[j] > 1):
+                if (not(j in tempDict)):
+                    tempDict[j] = 1
+                else:
+                    tempDict[j] += 1
+        #sort tokens by token (alphabetically) and by frequency; output these to 2 files for each html file
+        tempDict.pop("", None)
+        #remove all words with only one entry
+        for key, value in tempDict.items():
+            #goes through and creates term weights using tf and idf, then tf-idf
+            tfWeight = float(value) / len(tempDict.keys())
+            idfWeight = len(htmlList) / float(totalDocDict[key])
+            idfWeight = math.log(idfWeight)
+            htmlDicts[countOfHtml-1][key] = tfWeight * idfWeight
+        for t in tempDict:
+            #checks for existence
+            if len(dictOfLists[t]) == 0:
+                    dictOfLists[t].append(t)
+            if t in dictOfLists:
+                #determines position for term
+                positionOfTerm = countOfHtml - len(dictOfLists[t])
+                for pos in range(0, positionOfTerm + 1):
+                    dictOfLists[t].append(0)
+                dictOfLists[t].append(htmlDicts[countOfHtml-1][t])
+        for tempT in dictOfLists:
+            if (not(tempT in htmlDicts[countOfHtml-1])):
+                dictOfLists[tempT].append(0)
+        print(i)
+    #making dictionary and postings list
+    for word in dictOfLists:
+        tempList = dictOfLists[word]
+        wordFreqCount = 0
+        dictList.append(word) #1 dict
+        dictList.append(totalDocDict[word]) #2 dict
+        dictList.append(firstPos) #3 dict
+        #if one of the terms entered, also append to shortList
+        appendShort = 0
+        shortCounter = 1
+        while (shortCounter < len(sys.argv)):
+            if (word == sys.argv[shortCounter]):
+                appendShort = 1
+            shortCounter += 1
+        if (appendShort == 1):
+            shortList.append(word)
+            shortList.append(totalDocDict[word])
+            shortList.append(firstPos)
+        for tempW in tempList:
+            if (not(tempW == 0) and (not(tempW == word))):
+                tempHolder = wordFreqCount - 1
+                postList.append((tempHolder, tempW)) #1 post and #2 post
+            wordFreqCount += 1
+        firstPos += totalDocDict[word] #move on to next first position for next word
+    #compile all documents with at least one of the terms (dictWithOneTerm)
+    #startOfPost is 2 since the format of dictionary file is term, amount of appearances, and start position (increment each by 3)
+    #now using previous lists and dictionaries, calculate cosine similarity for the documents
+    #go through each document and calculate the cosine similarity for each, then set it to the key in dictWithOneTerm
+    dotProduct = 0
+    #queryAbs is for the first document
+    queryAbs = 0
+    #currAbs is for the second document
+    currAbs = 0
+    cosSim = 0
+    #first document
+    currentDocumentPos = 0
+    #second document
+    documentCounter = currentDocumentPos + 1
+    #print(dictWithSingleTerm)
+    highestSimilarity = 0.0
+    firstSimDoc = 0
+    secondSimDoc = 0
+    lowestSim = 1.0
+    firstLowDoc = 0
+    secondLowDoc = 0
+    while (currentDocumentPos != (len(htmlList) - 1)):
+        #keeps going to calculate the similarities between all documents
+        #keeps ahead (1:2, 1:3, 1:4, etc)
+        documentCounter = currentDocumentPos + 1
+        while (documentCounter < len(htmlList)):
+            listOfTerms = dict()
+            for key in htmlDicts[currentDocumentPos]:
+                listOfTerms[key] = 0
+            for key in htmlDicts[documentCounter]:
+                listOfTerms[key] = 0
+            for specTerm in listOfTerms:
+                #first document weight for dot product
+                currentWeight = 0
+                #second document weight for dot product
+                secondWeight = 0
+                if (specTerm in htmlDicts[currentDocumentPos]):
+                    #if the term appears in current document, access the term weight (tfidf)
+                    currentWeight = htmlDicts[currentDocumentPos][specTerm]
+                if (specTerm in htmlDicts[documentCounter]):
+                    secondWeight = htmlDicts[documentCounter][specTerm]
+                queryAbs += math.pow(currentWeight, 2)
+                currAbs += math.pow(secondWeight, 2)
+                dotProduct += secondWeight * currentWeight
+            queryAbs = math.sqrt(queryAbs)
+            currAbs = math.sqrt(currAbs)
+            #cosine similarity = Dot product(d1, d2) / ||d1|| * ||d2||
+            cosSim = dotProduct / (queryAbs * currAbs)
+            topOfAverage += cosSim + cosSim 
+            docOne = str(currentDocumentPos + 1)
+            docTwo = str(documentCounter + 1)
+            #key = docOne + ", " + docTwo
+            #retrievalDict[key] = cosSim
+            #appends to the diagonal
+            if (currentDocumentPos == (documentCounter - 1)):
+                #same document compared to itself
+                simMatrix[currentDocumentPos].append(1.0)
+            #appends to current position
+            simMatrix[currentDocumentPos].append(cosSim)
+            #appends to opposite position since equal (Sim(i, j) = sim(j, i))
+            simMatrix[documentCounter].append(cosSim)
+            if (cosSim > highestSimilarity):
+                firstSimDoc = currentDocumentPos
+                secondSimDoc = documentCounter
+                highestSimilarity = cosSim
+            if (cosSim < lowestSim):
+                firstLowDoc = currentDocumentPos
+                secondLowDoc = documentCounter
+                lowestSim = cosSim
+            queryAbs = 0
+            currAbs = 0
+            dotProduct = 0
+            documentCounter += 1
+        #increment the first document after comparisons
+        currentDocumentPos += 1
+    #now, using average link method cluster the documents together until no similarity has a greater score than 0.4
+    #create a loop to go through and compare each of the similarity scores; compute the average distance between clusters currently, then find which two clusters that
+    #are the closest to this value. merge these clusters, and continue until no 2 clusters have a score greater than 0.4
+    #look at one of favorites on chrome for example of the single linkage to see how clusters are handled after first wave (what score they have)
+    clusterList = []
+    i = 1
+    #diagonal 1s
+    topOfAverage += 503
+    averageDistance = topOfAverage / bottomOfAverage
+    closestToAverage = 1
+    closDocOne = 0
+    closDocTwo = 0
+    untilHundred = 0
+    distanceUnderFourth = 0
+    #clusterlist; used for outputting to a file for each merge
+    #do not need this
+    while (i <= len(htmlList)):
+        clusterList.append(i)
+        i += 1
+    #used for documenting each merge
+    outputFile = "Merges: \n"
+    while (untilHundred < 100 and distanceUnderFourth != 1):
+        distanceUnderFourth = 1
+        #iterate through 2d list; save value that is closest to average
+        #if at least one similarity is higher than .4, loop keeps going
+        for i in range(502):
+            for j in range(502):
+                if (simMatrix[i][j] < averageDistance):
+                    tempAverage = averageDistance - simMatrix[i][j]
+                    if (tempAverage < closestToAverage):
+                        closestToAverage = tempAverage
+                        closDocOne = i
+                        closDocTwo = j
+                if (simMatrix[i][j] > averageDistance):
+                    tempAverage = simMatrix[i][j] - averageDistance
+                    if (tempAverage < closestToAverage):
+                        closestToAverage = tempAverage
+                        closDocOne = i
+                        closDocTwo = j
+                if (simMatrix[i][j] > 0.4):
+                    distanceUnderFourth = 0
+        #merge the 2 documents that have that value; this means changing the higher entries row and column to 0 for all
+        #recalculate average by subtracting all the values being to replaced to 0 from higher entry for topOfAverage; subtract 503 each time from bottomOfAverage
+        if (closDocOne > closDocTwo):
+            for i in range(503):
+                topOfAverage -= simMatrix[closDocOne][i]
+                simMatrix[closDocOne][i] = 0.0
+                simMatrix[i][closDocOne] = 0.0
+        else:
+            for i in range(503):
+                topOfAverage -= simMatrix[closDocTwo][i]
+                simMatrix[closDocTwo][i] = 0.0
+                simMatrix[i][closDocTwo] = 0.0
+        bottomOfAverage -= 503
+        averageDistance = topOfAverage / bottomOfAverage
+        #add to outputFile by adding the string saying "Cluster X and Cluster Y are being merged.\n"
+        outputFile += "Cluster " + str(closDocOne+1) + " and " + str(closDocTwo+1) + " have merged." + '\n'
+        #update untilHundred counter
+        closestToAverage = 1
+        closDocOne = 0
+        closDocTwo = 0
+        untilHundred += 1
+    #outputs merges to text file
+    tokenDir = os.path.abspath(os.path.join(outputDir, "cluster" + ".txt"))
+    with open(tokenDir, 'w') as file:
+        file.write(json.dumps(outputFile))
+    file.close()
+    #runtime for program overall (can very)
+    print "My program took", time.time() - start_time, "to run."
+main()
